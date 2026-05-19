@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Werkstatt Wetter</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f4f4;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 500px;
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .header {
+      padding: 25px;
+      background: linear-gradient(to right, #ffe08a, #ffffff, #b9d7ff);
+    }
+
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      color: #555;
+    }
+
+    .content {
+      padding: 25px;
+    }
+
+    .search {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .search button {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: black;
+      color: white;
+      font-weight: bold;
+    }
+
+    .weather {
+      background: #fafafa;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #eee;
+    }
+
+    .temp {
+      font-size: 64px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .hint {
+      padding: 20px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      border: 2px solid;
+    }
+
+    .summer {
+      background: #fff8d8;
+      border-color: #f6c400;
+    }
+
+    .winter {
+      background: #e8f2ff;
+      border-color: #4aa3ff;
+    }
+
+    .rain {
+      background: #eef8ff;
+      border-color: #5daeff;
+    }
+
+    .forecast {
+      background: #fafafa;
+      border-radius: 20px;
+      border: 1px solid #eee;
+      overflow: hidden;
+    }
+
+    .forecast-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .forecast-item:last-child {
+      border-bottom: none;
+    }
+
+    .small {
+      color: #666;
+      margin-top: 5px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <div class="header">
+    <h1>Werkstatt Wetter</h1>
+    <p>Wetter + Reifenempfehlung</p>
+  </div>
+
+  <div class="content">
+
+    <div class="search">
+      <input type="text" id="cityInput" placeholder="Ort eingeben">
+      <button onclick="loadWeather()">Suchen</button>
+    </div>
+
+    <div class="weather">
+      <div id="location">München</div>
+      <div class="temp" id="temp">--°</div>
+      <div class="small" id="details">Lade Wetterdaten...</div>
+    </div>
+
+    <div class="hint" id="hintBox">
+      <h3 id="hintTitle">Reifen-Hinweis</h3>
+      <p id="hintText"></p>
+    </div>
+
+    <div class="forecast" id="forecast"></div>
+
+  </div>
+
+</div>
+
+<script>
+
+async function loadWeather() {
+
+  const city = document.getElementById("cityInput").value || "München";
+
+  const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=de&format=json`;
+
+  const geoRes = await fetch(geoUrl);
+  const geoData = await geoRes.json();
+
+  if (!geoData.results || geoData.results.length === 0) {
+    alert("Ort nicht gefunden");
+    return;
+  }
+
+  const place = geoData.results[0];
+
+  const lat = place.latitude;
+  const lon = place.longitude;
+
+  document.getElementById("location").innerText =
+    `${place.name}, ${place.country}`;
+
+  const weatherUrl =
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,snowfall,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`;
+
+  const weatherRes = await fetch(weatherUrl);
+  const weatherData = await weatherRes.json();
+
+  const current = weatherData.current;
+
+  document.getElementById("temp").innerText =
+    `${Math.round(current.temperature_2m)}°`;
+
+  document.getElementById("details").innerText =
+    `Regen: ${current.rain} mm | Schnee: ${current.snowfall} mm | Wind: ${Math.round(current.wind_speed_10m)} km/h`;
+
+  const hintBox = document.getElementById("hintBox");
+  const hintTitle = document.getElementById("hintTitle");
+  const hintText = document.getElementById("hintText");
+
+  hintBox.className = "hint";
+
+  if (current.snowfall > 0 || current.temperature_2m <= 3) {
+
+    hintBox.classList.add("winter");
+
+    hintTitle.innerText = "❄️ Winterreifen empfohlen";
+
+    hintText.innerText =
+      "Kälte oder Schnee: Winterreifen bieten mehr Grip und Sicherheit.";
+
+  } else if (current.temperature_2m < 7) {
+
+    hintBox.classList.add("winter");
+
+    hintTitle.innerText = "⚠️ Unter 7°C";
+
+    hintText.innerText =
+      "Winterreifen bleiben bei niedrigen Temperaturen flexibler.";
+
+  } else if (current.rain > 0) {
+
+    hintBox.classList.add("rain");
+
+    hintTitle.innerText = "🌧️ Aquaplaning-Risiko";
+
+    hintText.innerText =
+      "Bei Regen auf Profiltiefe und Reifendruck achten.";
+
+  } else {
+
+    hintBox.classList.add("summer");
+
+    hintTitle.innerText = "☀️ Sommerreifen passend";
+
+    hintText.innerText =
+      "Gute Bedingungen für Sommerreifen.";
+
+  }
+
+  const forecast = document.getElementById("forecast");
+
+  forecast.innerHTML = "";
+
+  weatherData.daily.time.forEach((day, index) => {
+
+    const item = document.createElement("div");
+
+    item.className = "forecast-item";
+
+    const date = new Date(day).toLocaleDateString("de-DE", {
+      weekday: "short"
+    });
+
+    item.innerHTML = `
+      <div>${date}</div>
+      <div>
+        ${Math.round(weatherData.daily.temperature_2m_min[index])}°
+        /
+        ${Math.round(weatherData.daily.temperature_2m_max[index])}°
+      </div>
+    `;
+
+    forecast.appendChild(item);
+
+  });
+
+}
+
+loadWeather();
+
+</script>
+
+</body>
+</html>
