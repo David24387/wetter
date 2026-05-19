@@ -5,86 +5,90 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Werkstatt Wetter</title>
 
-  <!-- Montserrat -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
-
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
 
     body {
-      font-family: 'Montserrat', Arial, sans-serif;
-      background: #fff;
-      color: #111;
+      background: #f4f4f4;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
 
-    .widget {
+    .card {
       width: 100%;
-      max-width: 320px;
-      background: #fff;
-      border-top: 3px solid #FEDD00;
-      padding: 14px 16px 10px;
-      position: relative;
+      max-width: 540px;
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
-    .widget-title {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: #111;
-      margin-bottom: 12px;
+    .header {
+      padding: 25px;
+      background: linear-gradient(to right, #ffe08a, #ffffff, #b9d7ff);
+    }
+
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      color: #555;
+    }
+
+    .content {
+      padding: 25px;
     }
 
     .search {
       display: flex;
-      gap: 6px;
+      gap: 10px;
       margin-bottom: 10px;
+      position: relative;
     }
 
     .search input {
       flex: 1;
-      border: 1px solid #ddd;
-      padding: 8px 10px;
-      font-size: 11px;
-      font-family: inherit;
-      outline: none;
-    }
-
-    .search input:focus {
-      border-color: #FEDD00;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 16px;
     }
 
     .search button {
-      background: #111;
-      color: white;
+      padding: 12px 16px;
       border: none;
-      padding: 8px 10px;
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
+      border-radius: 12px;
       cursor: pointer;
-      font-family: inherit;
-    }
-
-    .search button:hover {
-      background: #222;
+      background: black;
+      color: white;
+      font-weight: bold;
     }
 
     .suggestions {
       display: none;
-      border: 1px solid #ddd;
+      margin-bottom: 20px;
       background: white;
-      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     }
 
     .suggestion {
-      padding: 8px 10px;
+      padding: 12px 14px;
       cursor: pointer;
       border-bottom: 1px solid #eee;
+      font-size: 15px;
     }
 
     .suggestion:last-child {
@@ -92,140 +96,148 @@
     }
 
     .suggestion:hover {
-      background: #fafafa;
+      background: #f3f3f3;
     }
 
     .suggestion strong {
       display: block;
-      font-size: 11px;
-      font-weight: 700;
     }
 
     .suggestion span {
-      font-size: 10px;
+      font-size: 13px;
       color: #666;
     }
 
-    .location {
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 4px;
+    .weather {
+      background: #fafafa;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #eee;
     }
 
     .temp {
-      font-size: 46px;
-      font-weight: 800;
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .details {
-      font-size: 10px;
-      color: #555;
-      line-height: 1.5;
-      margin-bottom: 12px;
+      font-size: 64px;
+      font-weight: bold;
+      margin: 10px 0;
     }
 
     .hint {
-      border-left: 3px solid #FEDD00;
-      background: #fafafa;
-      padding: 10px;
-      margin-bottom: 12px;
+      padding: 20px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      border: 2px solid;
     }
 
-    .hint h3 {
-      font-size: 11px;
-      font-weight: 700;
-      margin-bottom: 4px;
+    .summer {
+      background: #fff8d8;
+      border-color: #f6c400;
     }
 
-    .hint p {
-      font-size: 10px;
-      color: #555;
-      line-height: 1.4;
+    .winter {
+      background: #e8f2ff;
+      border-color: #4aa3ff;
+    }
+
+    .rain {
+      background: #eef8ff;
+      border-color: #5daeff;
     }
 
     .forecast {
-      border-top: 1px solid #eee;
-      margin-top: 6px;
+      background: #fafafa;
+      border-radius: 20px;
+      border: 1px solid #eee;
+      overflow: hidden;
     }
 
     .forecast-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
-      font-size: 11px;
     }
 
     .forecast-item:last-child {
       border-bottom: none;
     }
 
+    .small {
+      color: #666;
+      margin-top: 5px;
+    }
+
     .error {
       display: none;
-      font-size: 10px;
-      color: #b00000;
-      margin-bottom: 10px;
+      background: #fff0f0;
+      color: #a10000;
+      border: 1px solid #ffcccc;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 15px;
+      font-size: 14px;
     }
+
   </style>
 </head>
-
 <body>
 
-<div class="widget">
+<div class="card">
 
-  <div class="widget-title">
-    Werkstatt Wetter
+  <div class="header">
+    <h1>Werkstatt Wetter</h1>
+    <p>Wetter + Reifenempfehlung</p>
   </div>
 
-  <div class="search">
-    <input
-      type="text"
-      id="cityInput"
-      placeholder="Ort eingeben"
-      autocomplete="off"
-      oninput="searchSuggestions()"
-      onkeydown="handleEnter(event)"
-    >
+  <div class="content">
 
-    <button onclick="loadWeather()">
-      Suchen
-    </button>
+    <div class="search">
+      <input
+        type="text"
+        id="cityInput"
+        placeholder="Ort eingeben, z. B. Frankfurt"
+        autocomplete="off"
+        oninput="searchSuggestions()"
+        onkeydown="handleEnter(event)"
+      >
+      <button onclick="loadWeather()">Suchen</button>
+    </div>
+
+    <div class="suggestions" id="suggestions"></div>
+    <div class="error" id="errorBox"></div>
+
+    <div class="weather">
+      <div id="location">München</div>
+      <div class="temp" id="temp">--°</div>
+      <div class="small" id="details">Lade Wetterdaten...</div>
+    </div>
+
+    <div class="hint" id="hintBox">
+      <h3 id="hintTitle">Reifen-Hinweis</h3>
+      <p id="hintText"></p>
+    </div>
+
+    <div class="forecast" id="forecast"></div>
+
   </div>
-
-  <div class="suggestions" id="suggestions"></div>
-
-  <div class="error" id="errorBox"></div>
-
-  <div class="location" id="location">
-    München
-  </div>
-
-  <div class="temp" id="temp">
-    --°
-  </div>
-
-  <div class="details" id="details">
-    Lade Wetterdaten...
-  </div>
-
-  <div class="hint" id="hintBox">
-    <h3 id="hintTitle">
-      Reifen-Hinweis
-    </h3>
-
-    <p id="hintText"></p>
-  </div>
-
-  <div class="forecast" id="forecast"></div>
 
 </div>
 
 <script>
-
 let suggestionResults = [];
 let debounceTimer = null;
+
+function showError(message) {
+  const errorBox = document.getElementById("errorBox");
+  errorBox.innerText = message;
+  errorBox.style.display = "block";
+}
+
+function hideError() {
+  const errorBox = document.getElementById("errorBox");
+  errorBox.innerText = "";
+  errorBox.style.display = "none";
+}
 
 function handleEnter(event) {
   if (event.key === "Enter") {
@@ -233,213 +245,226 @@ function handleEnter(event) {
   }
 }
 
-function showError(message) {
-  const box = document.getElementById("errorBox");
-  box.innerText = message;
-  box.style.display = "block";
-}
-
-function hideError() {
-  const box = document.getElementById("errorBox");
-  box.style.display = "none";
-}
-
 async function searchSuggestions() {
-
   clearTimeout(debounceTimer);
 
   debounceTimer = setTimeout(async () => {
-
-    const city =
-      document.getElementById("cityInput").value.trim();
-
-    const box =
-      document.getElementById("suggestions");
+    const city = document.getElementById("cityInput").value.trim();
+    const suggestionsBox = document.getElementById("suggestions");
 
     if (city.length < 2) {
-      box.style.display = "none";
-      box.innerHTML = "";
+      suggestionsBox.style.display = "none";
+      suggestionsBox.innerHTML = "";
+      suggestionResults = [];
       return;
     }
 
     try {
-
-      const url =
+      const geoUrl =
         `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=8&language=de&format=json`;
 
-      const res = await fetch(url);
-      const data = await res.json();
+      const geoRes = await fetch(geoUrl);
+      const geoData = await geoRes.json();
 
-      suggestionResults = data.results || [];
+      suggestionResults = geoData.results || [];
 
-      if (!suggestionResults.length) {
-        box.style.display = "none";
+      if (suggestionResults.length === 0) {
+        suggestionsBox.style.display = "none";
+        suggestionsBox.innerHTML = "";
         return;
       }
 
-      box.innerHTML =
-        suggestionResults.map((place, index) => `
+      suggestionsBox.innerHTML = suggestionResults.map((place, index) => {
+        const admin = place.admin1 ? `, ${place.admin1}` : "";
+        const country = place.country ? `, ${place.country}` : "";
+        const extra = `${admin}${country}`;
 
-          <div class="suggestion"
-               onclick="selectSuggestion(${index})">
-
-            <strong>
-              ${place.name}
-            </strong>
-
-            <span>
-              ${place.admin1 || ""}
-              ${place.country ? ", " + place.country : ""}
-            </span>
-
+        return `
+          <div class="suggestion" onclick="selectSuggestion(${index})">
+            <strong>${place.name}</strong>
+            <span>${extra || "Standort auswählen"}</span>
           </div>
+        `;
+      }).join("");
 
-        `).join("");
-
-      box.style.display = "block";
-
+      suggestionsBox.style.display = "block";
     } catch (error) {
-
-      box.style.display = "none";
-
+      suggestionsBox.style.display = "none";
+      suggestionsBox.innerHTML = "";
     }
-
   }, 300);
 }
 
 function selectSuggestion(index) {
-
   const place = suggestionResults[index];
 
-  document.getElementById("cityInput").value =
-    `${place.name}${place.admin1 ? ", " + place.admin1 : ""}`;
+  if (!place) return;
 
+  const label =
+    `${place.name}${place.admin1 ? ", " + place.admin1 : ""}${place.country ? ", " + place.country : ""}`;
+
+  document.getElementById("cityInput").value = label;
   document.getElementById("suggestions").style.display = "none";
 
   loadWeatherByPlace(place);
 }
 
-async function loadWeather() {
-
-  hideError();
-
-  const city =
-    document.getElementById("cityInput").value.trim() || "München";
-
+async function findBestPlace(city) {
   const geoUrl =
     `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=10&language=de&format=json`;
 
   const geoRes = await fetch(geoUrl);
   const geoData = await geoRes.json();
 
-  if (!geoData.results || !geoData.results.length) {
-
-    showError("Ort nicht gefunden.");
-
-    return;
+  if (!geoData.results || geoData.results.length === 0) {
+    return null;
   }
 
-  const place =
-    geoData.results.find(p => p.country_code === "DE")
-    || geoData.results[0];
+  // Spezialfall: Frankfurt Oder / Frankfurt an der Oder
+  const lowerCity = city.toLowerCase();
 
-  loadWeatherByPlace(place);
+  if (
+    lowerCity.includes("frankfurt oder") ||
+    lowerCity.includes("frankfurt an der oder") ||
+    lowerCity.includes("frankfurt/oder")
+  ) {
+    const frankfurtOder = geoData.results.find(place =>
+      place.name.toLowerCase().includes("frankfurt") &&
+      (
+        (place.admin1 && place.admin1.toLowerCase().includes("brandenburg")) ||
+        (place.latitude > 52 && place.longitude > 13)
+      )
+    );
+
+    if (frankfurtOder) return frankfurtOder;
+  }
+
+  // Wenn Deutschland dabei ist, Deutschland bevorzugen
+  const germanPlace = geoData.results.find(place => place.country_code === "DE");
+  return germanPlace || geoData.results[0];
+}
+
+async function loadWeather() {
+  hideError();
+
+  const city = document.getElementById("cityInput").value.trim() || "München";
+  const suggestionsBox = document.getElementById("suggestions");
+  suggestionsBox.style.display = "none";
+
+  try {
+    const place = await findBestPlace(city);
+
+    if (!place) {
+      showError("Ort nicht gefunden. Tipp: Wähle einen Vorschlag aus der Liste.");
+      return;
+    }
+
+    await loadWeatherByPlace(place);
+  } catch (error) {
+    showError("Wetterdaten konnten nicht geladen werden.");
+  }
 }
 
 async function loadWeatherByPlace(place) {
+  hideError();
 
   const lat = place.latitude;
   const lon = place.longitude;
 
-  document.getElementById("location").innerText =
-    `${place.name}${place.admin1 ? ", " + place.admin1 : ""}`;
+  const label =
+    `${place.name}${place.admin1 ? ", " + place.admin1 : ""}${place.country ? ", " + place.country : ""}`;
+
+  document.getElementById("location").innerText = label;
+  document.getElementById("temp").innerText = "--°";
+  document.getElementById("details").innerText = "Lade Wetterdaten...";
 
   const weatherUrl =
     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,snowfall,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`;
 
-  const res = await fetch(weatherUrl);
-  const data = await res.json();
+  const weatherRes = await fetch(weatherUrl);
+  const weatherData = await weatherRes.json();
 
-  const current = data.current;
+  const current = weatherData.current;
 
   document.getElementById("temp").innerText =
     `${Math.round(current.temperature_2m)}°`;
 
   document.getElementById("details").innerText =
-    `Regen: ${current.rain} mm · Schnee: ${current.snowfall} mm · Wind: ${Math.round(current.wind_speed_10m)} km/h`;
+    `Regen: ${current.rain} mm | Schnee: ${current.snowfall} mm | Wind: ${Math.round(current.wind_speed_10m)} km/h`;
 
-  const hintTitle =
-    document.getElementById("hintTitle");
+  const hintBox = document.getElementById("hintBox");
+  const hintTitle = document.getElementById("hintTitle");
+  const hintText = document.getElementById("hintText");
 
-  const hintText =
-    document.getElementById("hintText");
+  hintBox.className = "hint";
 
   if (current.snowfall > 0 || current.temperature_2m <= 3) {
 
-    hintTitle.innerText =
-      "❄️ Winterreifen empfohlen";
+    hintBox.classList.add("winter");
+
+    hintTitle.innerText = "❄️ Winterreifen empfohlen";
 
     hintText.innerText =
       "Kälte oder Schnee: Winterreifen bieten mehr Grip und Sicherheit.";
 
   } else if (current.temperature_2m < 7) {
 
-    hintTitle.innerText =
-      "⚠️ Unter 7°C";
+    hintBox.classList.add("winter");
+
+    hintTitle.innerText = "⚠️ Unter 7°C";
 
     hintText.innerText =
       "Winterreifen bleiben bei niedrigen Temperaturen flexibler.";
 
   } else if (current.rain > 0) {
 
-    hintTitle.innerText =
-      "🌧️ Aquaplaning-Risiko";
+    hintBox.classList.add("rain");
+
+    hintTitle.innerText = "🌧️ Aquaplaning-Risiko";
 
     hintText.innerText =
       "Bei Regen auf Profiltiefe und Reifendruck achten.";
 
   } else {
 
-    hintTitle.innerText =
-      "☀️ Sommerreifen passend";
+    hintBox.classList.add("summer");
+
+    hintTitle.innerText = "☀️ Sommerreifen passend";
 
     hintText.innerText =
       "Gute Bedingungen für Sommerreifen.";
 
   }
 
-  const forecast =
-    document.getElementById("forecast");
+  const forecast = document.getElementById("forecast");
 
   forecast.innerHTML = "";
 
-  data.daily.time.forEach((day, index) => {
+  weatherData.daily.time.forEach((day, index) => {
 
-    const date =
-      new Date(day).toLocaleDateString("de-DE", {
-        weekday: "short"
-      });
+    const item = document.createElement("div");
 
-    forecast.innerHTML += `
+    item.className = "forecast-item";
 
-      <div class="forecast-item">
+    const date = new Date(day).toLocaleDateString("de-DE", {
+      weekday: "short"
+    });
 
-        <span>${date}</span>
-
-        <strong>
-          ${Math.round(data.daily.temperature_2m_min[index])}°
-          /
-          ${Math.round(data.daily.temperature_2m_max[index])}°
-        </strong>
-
+    item.innerHTML = `
+      <div>${date}</div>
+      <div>
+        ${Math.round(weatherData.daily.temperature_2m_min[index])}°
+        /
+        ${Math.round(weatherData.daily.temperature_2m_max[index])}°
       </div>
-
     `;
+
+    forecast.appendChild(item);
+
   });
 }
 
 loadWeather();
-
 </script>
 
 </body>
