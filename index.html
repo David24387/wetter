@@ -5,277 +5,437 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Werkstatt Wetter</title>
 
+  <!-- Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    * {
+    *, *::before, *::after {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
     }
 
     body {
-      background: #f4f4f4;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
+      font-family: 'Montserrat', Arial, sans-serif;
+      background: #fff;
+      color: #111;
     }
 
-    .card {
+    .widget {
       width: 100%;
-      max-width: 500px;
-      background: white;
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      max-width: 320px;
+      background: #fff;
+      border-top: 3px solid #FEDD00;
+      padding: 14px 16px 10px;
+      position: relative;
     }
 
-    .header {
-      padding: 25px;
-      background: linear-gradient(to right, #ffe08a, #ffffff, #b9d7ff);
-    }
-
-    .header h1 {
-      font-size: 32px;
-      margin-bottom: 5px;
-    }
-
-    .header p {
-      color: #555;
-    }
-
-    .content {
-      padding: 25px;
+    .widget-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #111;
+      margin-bottom: 12px;
     }
 
     .search {
       display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 6px;
+      margin-bottom: 10px;
     }
 
     .search input {
       flex: 1;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid #ccc;
-      font-size: 16px;
+      border: 1px solid #ddd;
+      padding: 8px 10px;
+      font-size: 11px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .search input:focus {
+      border-color: #FEDD00;
     }
 
     .search button {
-      padding: 12px 16px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      background: black;
+      background: #111;
       color: white;
-      font-weight: bold;
+      border: none;
+      padding: 8px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: inherit;
     }
 
-    .weather {
+    .search button:hover {
+      background: #222;
+    }
+
+    .suggestions {
+      display: none;
+      border: 1px solid #ddd;
+      background: white;
+      margin-bottom: 10px;
+    }
+
+    .suggestion {
+      padding: 8px 10px;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+    }
+
+    .suggestion:last-child {
+      border-bottom: none;
+    }
+
+    .suggestion:hover {
       background: #fafafa;
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 20px;
-      border: 1px solid #eee;
+    }
+
+    .suggestion strong {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .suggestion span {
+      font-size: 10px;
+      color: #666;
+    }
+
+    .location {
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 4px;
     }
 
     .temp {
-      font-size: 64px;
-      font-weight: bold;
-      margin: 10px 0;
+      font-size: 46px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .details {
+      font-size: 10px;
+      color: #555;
+      line-height: 1.5;
+      margin-bottom: 12px;
     }
 
     .hint {
-      padding: 20px;
-      border-radius: 20px;
-      margin-bottom: 20px;
-      border: 2px solid;
+      border-left: 3px solid #FEDD00;
+      background: #fafafa;
+      padding: 10px;
+      margin-bottom: 12px;
     }
 
-    .summer {
-      background: #fff8d8;
-      border-color: #f6c400;
+    .hint h3 {
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 4px;
     }
 
-    .winter {
-      background: #e8f2ff;
-      border-color: #4aa3ff;
-    }
-
-    .rain {
-      background: #eef8ff;
-      border-color: #5daeff;
+    .hint p {
+      font-size: 10px;
+      color: #555;
+      line-height: 1.4;
     }
 
     .forecast {
-      background: #fafafa;
-      border-radius: 20px;
-      border: 1px solid #eee;
-      overflow: hidden;
+      border-top: 1px solid #eee;
+      margin-top: 6px;
     }
 
     .forecast-item {
-      padding: 15px 20px;
-      border-bottom: 1px solid #eee;
       display: flex;
       justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 11px;
     }
 
     .forecast-item:last-child {
       border-bottom: none;
     }
 
-    .small {
-      color: #666;
-      margin-top: 5px;
+    .error {
+      display: none;
+      font-size: 10px;
+      color: #b00000;
+      margin-bottom: 10px;
     }
-
   </style>
 </head>
+
 <body>
 
-<div class="card">
+<div class="widget">
 
-  <div class="header">
-    <h1>Werkstatt Wetter</h1>
-    <p>Wetter + Reifenempfehlung</p>
+  <div class="widget-title">
+    Werkstatt Wetter
   </div>
 
-  <div class="content">
+  <div class="search">
+    <input
+      type="text"
+      id="cityInput"
+      placeholder="Ort eingeben"
+      autocomplete="off"
+      oninput="searchSuggestions()"
+      onkeydown="handleEnter(event)"
+    >
 
-    <div class="search">
-      <input type="text" id="cityInput" placeholder="Ort eingeben">
-      <button onclick="loadWeather()">Suchen</button>
-    </div>
-
-    <div class="weather">
-      <div id="location">München</div>
-      <div class="temp" id="temp">--°</div>
-      <div class="small" id="details">Lade Wetterdaten...</div>
-    </div>
-
-    <div class="hint" id="hintBox">
-      <h3 id="hintTitle">Reifen-Hinweis</h3>
-      <p id="hintText"></p>
-    </div>
-
-    <div class="forecast" id="forecast"></div>
-
+    <button onclick="loadWeather()">
+      Suchen
+    </button>
   </div>
+
+  <div class="suggestions" id="suggestions"></div>
+
+  <div class="error" id="errorBox"></div>
+
+  <div class="location" id="location">
+    München
+  </div>
+
+  <div class="temp" id="temp">
+    --°
+  </div>
+
+  <div class="details" id="details">
+    Lade Wetterdaten...
+  </div>
+
+  <div class="hint" id="hintBox">
+    <h3 id="hintTitle">
+      Reifen-Hinweis
+    </h3>
+
+    <p id="hintText"></p>
+  </div>
+
+  <div class="forecast" id="forecast"></div>
 
 </div>
 
 <script>
 
+let suggestionResults = [];
+let debounceTimer = null;
+
+function handleEnter(event) {
+  if (event.key === "Enter") {
+    loadWeather();
+  }
+}
+
+function showError(message) {
+  const box = document.getElementById("errorBox");
+  box.innerText = message;
+  box.style.display = "block";
+}
+
+function hideError() {
+  const box = document.getElementById("errorBox");
+  box.style.display = "none";
+}
+
+async function searchSuggestions() {
+
+  clearTimeout(debounceTimer);
+
+  debounceTimer = setTimeout(async () => {
+
+    const city =
+      document.getElementById("cityInput").value.trim();
+
+    const box =
+      document.getElementById("suggestions");
+
+    if (city.length < 2) {
+      box.style.display = "none";
+      box.innerHTML = "";
+      return;
+    }
+
+    try {
+
+      const url =
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=8&language=de&format=json`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      suggestionResults = data.results || [];
+
+      if (!suggestionResults.length) {
+        box.style.display = "none";
+        return;
+      }
+
+      box.innerHTML =
+        suggestionResults.map((place, index) => `
+
+          <div class="suggestion"
+               onclick="selectSuggestion(${index})">
+
+            <strong>
+              ${place.name}
+            </strong>
+
+            <span>
+              ${place.admin1 || ""}
+              ${place.country ? ", " + place.country : ""}
+            </span>
+
+          </div>
+
+        `).join("");
+
+      box.style.display = "block";
+
+    } catch (error) {
+
+      box.style.display = "none";
+
+    }
+
+  }, 300);
+}
+
+function selectSuggestion(index) {
+
+  const place = suggestionResults[index];
+
+  document.getElementById("cityInput").value =
+    `${place.name}${place.admin1 ? ", " + place.admin1 : ""}`;
+
+  document.getElementById("suggestions").style.display = "none";
+
+  loadWeatherByPlace(place);
+}
+
 async function loadWeather() {
 
-  const city = document.getElementById("cityInput").value || "München";
+  hideError();
 
-  const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=de&format=json`;
+  const city =
+    document.getElementById("cityInput").value.trim() || "München";
+
+  const geoUrl =
+    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=10&language=de&format=json`;
 
   const geoRes = await fetch(geoUrl);
   const geoData = await geoRes.json();
 
-  if (!geoData.results || geoData.results.length === 0) {
-    alert("Ort nicht gefunden");
+  if (!geoData.results || !geoData.results.length) {
+
+    showError("Ort nicht gefunden.");
+
     return;
   }
 
-  const place = geoData.results[0];
+  const place =
+    geoData.results.find(p => p.country_code === "DE")
+    || geoData.results[0];
+
+  loadWeatherByPlace(place);
+}
+
+async function loadWeatherByPlace(place) {
 
   const lat = place.latitude;
   const lon = place.longitude;
 
   document.getElementById("location").innerText =
-    `${place.name}, ${place.country}`;
+    `${place.name}${place.admin1 ? ", " + place.admin1 : ""}`;
 
   const weatherUrl =
     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,snowfall,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`;
 
-  const weatherRes = await fetch(weatherUrl);
-  const weatherData = await weatherRes.json();
+  const res = await fetch(weatherUrl);
+  const data = await res.json();
 
-  const current = weatherData.current;
+  const current = data.current;
 
   document.getElementById("temp").innerText =
     `${Math.round(current.temperature_2m)}°`;
 
   document.getElementById("details").innerText =
-    `Regen: ${current.rain} mm | Schnee: ${current.snowfall} mm | Wind: ${Math.round(current.wind_speed_10m)} km/h`;
+    `Regen: ${current.rain} mm · Schnee: ${current.snowfall} mm · Wind: ${Math.round(current.wind_speed_10m)} km/h`;
 
-  const hintBox = document.getElementById("hintBox");
-  const hintTitle = document.getElementById("hintTitle");
-  const hintText = document.getElementById("hintText");
+  const hintTitle =
+    document.getElementById("hintTitle");
 
-  hintBox.className = "hint";
+  const hintText =
+    document.getElementById("hintText");
 
   if (current.snowfall > 0 || current.temperature_2m <= 3) {
 
-    hintBox.classList.add("winter");
-
-    hintTitle.innerText = "❄️ Winterreifen empfohlen";
+    hintTitle.innerText =
+      "❄️ Winterreifen empfohlen";
 
     hintText.innerText =
       "Kälte oder Schnee: Winterreifen bieten mehr Grip und Sicherheit.";
 
   } else if (current.temperature_2m < 7) {
 
-    hintBox.classList.add("winter");
-
-    hintTitle.innerText = "⚠️ Unter 7°C";
+    hintTitle.innerText =
+      "⚠️ Unter 7°C";
 
     hintText.innerText =
       "Winterreifen bleiben bei niedrigen Temperaturen flexibler.";
 
   } else if (current.rain > 0) {
 
-    hintBox.classList.add("rain");
-
-    hintTitle.innerText = "🌧️ Aquaplaning-Risiko";
+    hintTitle.innerText =
+      "🌧️ Aquaplaning-Risiko";
 
     hintText.innerText =
       "Bei Regen auf Profiltiefe und Reifendruck achten.";
 
   } else {
 
-    hintBox.classList.add("summer");
-
-    hintTitle.innerText = "☀️ Sommerreifen passend";
+    hintTitle.innerText =
+      "☀️ Sommerreifen passend";
 
     hintText.innerText =
       "Gute Bedingungen für Sommerreifen.";
 
   }
 
-  const forecast = document.getElementById("forecast");
+  const forecast =
+    document.getElementById("forecast");
 
   forecast.innerHTML = "";
 
-  weatherData.daily.time.forEach((day, index) => {
+  data.daily.time.forEach((day, index) => {
 
-    const item = document.createElement("div");
+    const date =
+      new Date(day).toLocaleDateString("de-DE", {
+        weekday: "short"
+      });
 
-    item.className = "forecast-item";
+    forecast.innerHTML += `
 
-    const date = new Date(day).toLocaleDateString("de-DE", {
-      weekday: "short"
-    });
+      <div class="forecast-item">
 
-    item.innerHTML = `
-      <div>${date}</div>
-      <div>
-        ${Math.round(weatherData.daily.temperature_2m_min[index])}°
-        /
-        ${Math.round(weatherData.daily.temperature_2m_max[index])}°
+        <span>${date}</span>
+
+        <strong>
+          ${Math.round(data.daily.temperature_2m_min[index])}°
+          /
+          ${Math.round(data.daily.temperature_2m_max[index])}°
+        </strong>
+
       </div>
+
     `;
-
-    forecast.appendChild(item);
-
   });
-
 }
 
 loadWeather();
