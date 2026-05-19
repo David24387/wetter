@@ -14,26 +14,23 @@
     }
 
     body {
-      background: #f4f4f4;
+      background: white;
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
+      margin: 0;
+      padding: 0;
     }
 
     .card {
       width: 100%;
-      max-width: 540px;
+      min-height: 100vh;
       background: white;
-      border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
     .header {
-      padding: 25px;
+      padding: 30px 25px;
       background: linear-gradient(to right, #144c9f, #0c7ac5);
+      width: 100%;
     }
 
     .header h1 {
@@ -44,6 +41,7 @@
 
     .header p {
       color: #FFF;
+      font-size: 18px;
     }
 
     .content {
@@ -59,27 +57,27 @@
 
     .search input {
       flex: 1;
-      padding: 12px;
-      border-radius: 12px;
+      padding: 14px;
+      border-radius: 14px;
       border: 1px solid #ccc;
       font-size: 16px;
     }
 
     .search button {
-      padding: 12px 16px;
+      padding: 14px 18px;
       border: none;
-      border-radius: 12px;
+      border-radius: 14px;
       cursor: pointer;
       background: black;
       color: white;
       font-weight: bold;
+      font-size: 15px;
     }
 
     .suggestions {
       display: none;
       margin-bottom: 20px;
       background: white;
-      border: 1px solid #ddd;
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 8px 20px rgba(0,0,0,0.08);
@@ -114,13 +112,17 @@
       border-radius: 20px;
       padding: 20px;
       margin-bottom: 20px;
-      border: 1px solid #eee;
     }
 
     .temp {
       font-size: 64px;
       font-weight: bold;
       margin: 10px 0;
+    }
+
+    .small {
+      color: #666;
+      margin-top: 5px;
     }
 
     .hint {
@@ -148,7 +150,6 @@
     .forecast {
       background: #fafafa;
       border-radius: 20px;
-      border: 1px solid #eee;
       overflow: hidden;
     }
 
@@ -161,11 +162,6 @@
 
     .forecast-item:last-child {
       border-bottom: none;
-    }
-
-    .small {
-      color: #666;
-      margin-top: 5px;
     }
 
     .error {
@@ -321,26 +317,6 @@ async function findBestPlace(city) {
     return null;
   }
 
-  // Spezialfall: Frankfurt Oder / Frankfurt an der Oder
-  const lowerCity = city.toLowerCase();
-
-  if (
-    lowerCity.includes("frankfurt oder") ||
-    lowerCity.includes("frankfurt an der oder") ||
-    lowerCity.includes("frankfurt/oder")
-  ) {
-    const frankfurtOder = geoData.results.find(place =>
-      place.name.toLowerCase().includes("frankfurt") &&
-      (
-        (place.admin1 && place.admin1.toLowerCase().includes("brandenburg")) ||
-        (place.latitude > 52 && place.longitude > 13)
-      )
-    );
-
-    if (frankfurtOder) return frankfurtOder;
-  }
-
-  // Wenn Deutschland dabei ist, Deutschland bevorzugen
   const germanPlace = geoData.results.find(place => place.country_code === "DE");
   return germanPlace || geoData.results[0];
 }
@@ -356,7 +332,7 @@ async function loadWeather() {
     const place = await findBestPlace(city);
 
     if (!place) {
-      showError("Ort nicht gefunden. Tipp: Wähle einen Vorschlag aus der Liste.");
+      showError("Ort nicht gefunden.");
       return;
     }
 
@@ -376,8 +352,6 @@ async function loadWeatherByPlace(place) {
     `${place.name}${place.admin1 ? ", " + place.admin1 : ""}${place.country ? ", " + place.country : ""}`;
 
   document.getElementById("location").innerText = label;
-  document.getElementById("temp").innerText = "--°";
-  document.getElementById("details").innerText = "Lade Wetterdaten...";
 
   const weatherUrl =
     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,snowfall,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`;
