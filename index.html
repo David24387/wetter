@@ -203,7 +203,7 @@
       <input
         type="text"
         id="cityInput"
-        placeholder="Ort eingeben, z. B. Frankfurt"
+        placeholder="Ort eingeben, z. B. Mannheim"
         autocomplete="off"
         oninput="searchSuggestions()"
         onkeydown="handleEnter(event)"
@@ -215,7 +215,7 @@
     <div class="error" id="errorBox"></div>
 
     <div class="weather">
-      <div id="location">München</div>
+      <div id="location">Mannheim</div>
       <div class="temp" id="temp">--°</div>
       <div class="small" id="details">Lade Wetterdaten...</div>
     </div>
@@ -335,7 +335,7 @@ async function findBestPlace(city) {
 async function loadWeather() {
   hideError();
 
-  const city = document.getElementById("cityInput").value.trim() || "München";
+  const city = document.getElementById("cityInput").value.trim() || "Mannheim";
   const suggestionsBox = document.getElementById("suggestions");
   suggestionsBox.style.display = "none";
 
